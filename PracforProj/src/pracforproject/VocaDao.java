@@ -133,15 +133,7 @@ public class VocaDao {
 					i--;
 				}
 			}
-			try {
-				oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
-				oos.writeObject(userData);
-				oos.flush();
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			init();
+			fileWriter();
 		}
 
 	}
@@ -271,17 +263,7 @@ public class VocaDao {
 				System.out.println("메인화면으로 이동합니다");
 				vo.inputDate = "";
 
-				try {
-					oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
-					oos.writeObject(userData);
-					oos.flush();
-					oos.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				init();
+				fileWriter();
 				VocaExRun.start(mvo);
 			}
 		}
@@ -360,15 +342,7 @@ public class VocaDao {
 		int wordLevel = sc.nextInt();
 		vo = new Voca(engWord,meaning, wordLevel);
 		userData.add(vo);
-		try {
-			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
-			oos.writeObject(userData);
-			oos.flush();
-			oos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		init();
+		fileWriter();
 		VocaExRun.start(mvo);
 	}
 	
@@ -406,7 +380,6 @@ public class VocaDao {
 	}
 	
 	// 최초 로그인시 레벨 테스트
-	@SuppressWarnings("unchecked")
 	public static void levelTest(Member mvo) {
 		init();
 		sc=new Scanner(System.in);
@@ -504,6 +477,32 @@ public class VocaDao {
 		int targetIdx= MemberDao.memberList.stream().map(Member::getMemberID).collect(Collectors.toList())
 				.indexOf(mvo.getMemberID());
 		MemberDao.memberList.set(targetIdx, mvo);
+		fileReadThenWriter();
+		VocaExRun.start(mvo);
+	}
+	
+	// 사용자 레벨업
+	public static void memberLevelUp() {
+		init();
+		int level = mvo.getMemberLevel();
+		List<Voca> existChecek = new ArrayList<>();
+		for(Voca v : userData) {
+			if(v.getWordLevel()==level&&v.getStudyDate()!=null) {
+				existChecek.add(v);
+			}
+		}
+		if(existChecek.size()==0) {
+			mvo.setMemberLevel(level+1);
+			userPath = path + "\\" + mvo.getMemberID() + "의 학습파일" + form;
+			int targetIdx= MemberDao.memberList.stream().map(Member::getMemberID).collect(Collectors.toList())
+					.indexOf(mvo.getMemberID());
+			MemberDao.memberList.set(targetIdx, mvo);
+			fileReadThenWriter();
+			VocaExRun.start(mvo);
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public static void fileReadThenWriter() {
 		try {
 			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(userPath)));
 			userData.addAll((ArrayList<Voca>) ois.readObject());
@@ -520,43 +519,21 @@ public class VocaDao {
 			e.printStackTrace();
 		}
 		MemberDao.init();
-		VocaExRun.start(mvo);
+	}
+	 
+	public void fileWriter() {
+		try {
+			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(userPath)));
+			oos.writeObject(userData);
+			oos.flush();
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		init();
 	}
 	
-	// 사용자 레벨업
-	@SuppressWarnings("unchecked")
-	public static void memberLevelUp() {
-		init();
-		int level = mvo.getMemberLevel();
-		List<Voca> existChecek = new ArrayList<>();
-		for(Voca v : userData) {
-			if(v.getWordLevel()==level&&v.getStudyDate()!=null) {
-				existChecek.add(v);
-			}
-		}
-		if(existChecek.size()==0) {
-			mvo.setMemberLevel(level+1);
-			userPath = path + "\\" + mvo.getMemberID() + "의 학습파일" + form;
-			int targetIdx= MemberDao.memberList.stream().map(Member::getMemberID).collect(Collectors.toList())
-					.indexOf(mvo.getMemberID());
-			MemberDao.memberList.set(targetIdx, mvo);
-			try {
-				ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(userPath)));
-				userData.addAll((ArrayList<Voca>) ois.readObject());
-				ois.close();
-				oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(MemberDao.memberListFile+form)));
-				oos.writeObject(MemberDao.memberList);
-				oos.flush();
-				oos.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			MemberDao.init();
-			VocaExRun.start(mvo);
-		}
-	}
+	
 }

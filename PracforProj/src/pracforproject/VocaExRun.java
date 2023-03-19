@@ -74,7 +74,7 @@ public class VocaExRun {
 		int input;
 		while (flag != true) {
 			sc = new Scanner(System.in);
-			System.out.println("\n메인메뉴로 가시려면 0을 입력하세요");
+			toMainMessage();
 			input = sc.nextInt();
 			if (input == 0) {
 				start(mvo);
@@ -87,7 +87,7 @@ public class VocaExRun {
 		System.out.println();
 		dao.reviewList();
 		while (flag != true) {
-			System.out.println("\n메인메뉴로 가시려면 0을 입력하세요");
+			toMainMessage();
 			System.out.println("복습 하실 날짜의 번호를 입력하세요");
 			int input = sc.nextInt();
 			if (input == 0) {
@@ -101,7 +101,7 @@ public class VocaExRun {
 	public static void test() {
 		while (flag != true) {
 			dao.testList();
-			System.out.println("\n메인메뉴로 가시려면 0을 입력하세요");
+			toMainMessage();
 			int input = sc.nextInt();
 			if (input == 0)
 				start(mvo);
@@ -120,5 +120,8 @@ public class VocaExRun {
 		while (flag != true) {
 			dao.finder();
 		}
+	}
+	public static void toMainMessage() {
+		System.out.println("\n메인메뉴로 가시려면 0을 입력하세요");
 	}
 }

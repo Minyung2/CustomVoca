@@ -26,13 +26,14 @@ public class MemberDao implements Serializable {
 	static ObjectOutputStream oos = null;
 	static ObjectInputStream ois = null;
 	static List<Member> memberList = new ArrayList<>();
-	static Scanner sc=new Scanner(System.in);
-	public Pattern p;
+	static Scanner sc = new Scanner(System.in);
 	public String idRegex = "^[a-zA-Z0-9]{5,12}$";
 	public String phoneRegex = "^01([0|1|6|7|8|9]?)([0-9]{3,4})([0-9]{4})$";
 	public String passwordRegex = "^(?=.*[a-z||A-Z])(?=.*[!@#$%^&+=_])(?=.*[0-9]).{8,}$";
-	public MemberDao() {}
-	
+
+	public MemberDao() {
+	}
+
 	// 파일, List 새로고침
 	@SuppressWarnings("unchecked")
 	public static void init() {
@@ -69,20 +70,11 @@ public class MemberDao implements Serializable {
 		getPassword();
 		getPhoneNumber();
 		memberList.add(vo);
-		try {
-			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(memberListFile + form)));
-			oos.writeObject(memberList);
-			oos.flush();
-			oos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		fileWriter();
 		System.out.println(vo.getMemberID() + "님 Vocatest에 가입하신것을 환영합니다");
-		init();
 		VocaExRun.mainScreen();
 	}
+
 	// ID 입력받기
 	public String getId() {
 		System.out.println("사용 하실 아이디 (영문, 숫자로만 이루어진 5 ~ 12자 이하만 사용 가능합니다) : ");
@@ -90,6 +82,7 @@ public class MemberDao implements Serializable {
 		signupIdChecker(memberId);
 		return memberId;
 	}
+
 	// 비밀번호 입력받기
 	public String getPassword() {
 		System.out.println("사용 하실 비밀번호 : (영문,숫자,특수문자가 포함된 8자 이상만 사용 가능합니다.) :");
@@ -97,6 +90,7 @@ public class MemberDao implements Serializable {
 		signupPasswordChecker(memberPassword);
 		return memberPassword;
 	}
+
 	// 핸드폰 번호 입력 받기
 	public String getPhoneNumber() {
 		System.out.println("핸드폰 번호를 입력하세요 : \t(-를 제외한 번호만 입력하세요.)");
@@ -152,7 +146,7 @@ public class MemberDao implements Serializable {
 	public boolean phoneNumberDuplicateChecker(String phoneNumber) {
 		return memberList.stream().anyMatch(memberList -> memberList.getPhoneNumber().equals(phoneNumber));
 	}
-
+	
 	// 로그인
 	public void login() {
 		sc = new Scanner(System.in);
@@ -175,50 +169,82 @@ public class MemberDao implements Serializable {
 			login();
 		}
 	}
-
+	
 	// 로그인 체크
 	public boolean loginChecker(String memberId, String memberPassword) {
-//		return memberList.stream().anyMatch(memList -> memList.getMemberID().equals(memberId))
-//				&& memberList.stream().anyMatch(memList -> memList.getMemberPassword().equals(memberPassword));
-		boolean checker=false;
-		for(Member m : memberList) {
-			if(m.getMemberID().equals(memberId)&&m.getMemberPassword().equals(memberPassword)) checker=true;
+		boolean checker = false;
+		for (Member m : memberList) {
+			if (m.getMemberID().equals(memberId) && m.getMemberPassword().equals(memberPassword))
+				checker = true;
 		}
 		return checker;
 	}
-	
+
 	// 회원정보 수정
-	public void memberUpdate(){
-		sc= new Scanner(System.in);
+	public void memberUpdate() {
+		sc = new Scanner(System.in);
 		System.out.print("아이디:");
-		String memberId=sc.next();
+		String memberId = sc.next();
 		System.out.print("비밀번호:");
-		String memberPassword=sc.next();
-		if(loginChecker(memberId, memberPassword)==true) {
+		String memberPassword = sc.next();
+		if (loginChecker(memberId, memberPassword) == true) {
 			updateGetter(memberId);
 			VocaExRun.mainScreen();
-		}else {
+		} else {
 			System.out.println("아이디와 비밀번호가 틀립니다.");
 			memberUpdate();
 		}
 	}
+
 	public void updateGetter(String memberId) {
 		System.out.println(memberList);
-		sc= new Scanner(System.in);
+		sc = new Scanner(System.in);
 		System.out.print("변경하실 비밀번호를 입력하세요");
-		String newPassword=sc.next();
+		String newPassword = sc.next();
 		if (!Pattern.matches(passwordRegex, newPassword)) {
 			System.out.println("양식에 맞지 않는 비밀번호 입니다.");
 			System.out.println();
 			updateGetter(memberId);
-		}else {
+		} else {
 			System.out.println("비밀번호 변경 완료");
-			for(Member m : memberList) {
-				if(m.getMemberID().equals(memberId)) {
+			for (Member m : memberList) {
+				if (m.getMemberID().equals(memberId)) {
 					m.setMemberPassword(newPassword);
 				}
 			}
 		}
+		fileWriter();
+	}
+
+	// 회원 탈퇴
+	public void memberWithdrawal() {
+		sc = new Scanner(System.in);
+		System.out.print("아이디:");
+		String memberId = sc.next();
+		System.out.print("비밀번호:");
+		String memberPassword = sc.next();
+		if (loginChecker(memberId, memberPassword) == true) {
+			System.out.println("탈퇴하시려면 1번 아니면 2번을 눌러주세요.");
+			int withdraw = sc.nextInt();
+			if (withdraw == 1) {
+				int target = memberList.stream().map(Member::getMemberID).collect(Collectors.toList())
+						.indexOf(memberId);
+				memberList.remove(target);
+				File userFile = new File("D:\\javavoca\\" + memberId + "의 학습파일.txt");
+				userFile.delete();
+				fileWriter();
+				VocaExRun.mainScreen();
+			}
+			if (withdraw == 2) {
+				VocaExRun.mainScreen();
+			}
+		} else {
+			System.out.println("아이디와 비밀번호가 틀립니다.");
+			memberWithdrawal();
+		}
+	}
+
+	public void fileWriter() {
 		try {
 			oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(memberListFile + form)));
 			oos.writeObject(memberList);
@@ -231,42 +257,5 @@ public class MemberDao implements Serializable {
 		}
 		init();
 	}
-	
-	// 회원 탈퇴
-	public void memberWithdrawal(){
-		sc= new Scanner(System.in);
-		System.out.print("아이디:");
-		String memberId=sc.next();
-		System.out.print("비밀번호:");
-		String memberPassword=sc.next();
-		if(loginChecker(memberId, memberPassword)==true) {
-			System.out.println("탈퇴하시려면 1번 아니면 2번을 눌러주세요.");
-			int withdraw = sc.nextInt();
-			if(withdraw==1) {
-				int target= memberList.stream().map(Member::getMemberID).collect(Collectors.toList()).indexOf(memberId);
-				memberList.remove(target);
-				try {
-					File userFile = new File("D:\\javavoca\\"+memberId+"의 학습파일.txt");
-					userFile.delete();
-					oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(memberListFile + form)));
-					oos.writeObject(memberList);
-					oos.flush();
-					oos.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				init();
-				VocaExRun.mainScreen();
-			}if(withdraw==2) {
-				VocaExRun.mainScreen();
-			}
-		}else {
-			System.out.println("아이디와 비밀번호가 틀립니다.");
-			memberWithdrawal();
-		}
-	}
-	
-	
+
 }
