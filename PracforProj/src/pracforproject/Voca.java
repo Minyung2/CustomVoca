@@ -5,30 +5,29 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Voca implements Serializable{
-
-	private static final long serialVersionUID = -6480609900420593203L;	// Serializable (ObejctWriter)
-	public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");// Date 포맷 지정
-	public String nowDate = simpleDateFormat.format(new Date());	// 현재 날짜 기록용
-	public String inputDate; 	// 검색 날짜
+	public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");// Date 포맷
+	public String nowDate = simpleDateFormat.format(new Date());
+	public String inputDate; 	// 시험 본 날짜
 	
 	private String engWord;		// 단어
 	private String meaning;		// 뜻
 	private int wordLevel;		// 단어 수준
 	private int answerCorrection;  // default 0(미학습), 1(정답), -1 (오답)
 	private String studyDate = nowDate; 	// 학습일
-
+	private String testDate = nowDate; 	// 시험 본 날짜
 	
 	
 	public Voca() {}
-	// 생성자
+	// constructor
 	public Voca(String engWord, String meaning, int wordLevel) {
 		this.engWord = engWord;
 		this.meaning = meaning;
 		this.wordLevel = wordLevel;
 		answerCorrection = 0;
 		studyDate=null;
+		testDate=null;
 	}
-	// getter, setter
+
 	String getEngWord() {
 		return engWord;
 	}
@@ -49,6 +48,7 @@ public class Voca implements Serializable{
 		this.wordLevel = wordLevel;
 		this.answerCorrection = answerCorrection;
 		this.studyDate = studyDate;
+		this.testDate = testDate;
 	}
 	int getWordLevel() {
 		return wordLevel;
@@ -69,10 +69,15 @@ public class Voca implements Serializable{
 	void setStudyDate(String studyDate) {
 		this.studyDate = studyDate;
 	}
-	
+	String getTestDate() {
+		return testDate;
+	}
+	void setTestDate(String testDate) {
+		this.testDate = testDate;
+	}
 	@Override
 	public String toString() {
-		return getEngWord()+"/"+getMeaning()+"/"+getWordLevel()+"/"+getAnswerCorrection()+"/"+getStudyDate()+"\n";
+		return getEngWord()+"/"+getMeaning()+"/"+getWordLevel()+"/"+getAnswerCorrection()+"/"+getStudyDate()+"/"+getTestDate()+"\n";
 	}
 	
 	

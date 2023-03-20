@@ -1,68 +1,39 @@
 package pracforproject;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class Member implements Serializable {
-	private static final long serialVersionUID = -6480609900420593203L;	
-	public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");// Date 포맷
-	public String nowDate = simpleDateFormat.format(new Date());
-	
-	private String memberID;
-	private String memberPassword;
-	private String phoneNumber;
-	private String lastLoginDate;
-	private int memberLevel;
-	
-	
-	// 생성자
-	public Member() {}
-	
-	public Member(String memberID, String memberPassword, String phoneNumber) {
+public class Member {
+	private int userIdx;
+	private String userID;
+	private String userPassword;
+	private int userLevel;
+	public Member(int userIdx, String userID, String userPassword, int userLevel) {
 		super();
-		this.memberID = memberID;
-		this.memberPassword = memberPassword;
-		this.phoneNumber=phoneNumber;
-		memberLevel=0;
-		lastLoginDate=null;
+		this.userIdx = userIdx;
+		this.userID = userID;
+		this.userPassword = userPassword;
+		this.userLevel = userLevel;
 	}
-	// getter, setter
-	String getMemberID() {
-		return memberID;
+	int getUserIdx() {
+		return userIdx;
 	}
-	void setMemberID(String memberID) {
-		this.memberID = memberID;
+	void setUserIdx(int userIdx) {
+		this.userIdx = userIdx;
 	}
-	String getMemberPassword() {
-		return memberPassword;
+	String getUserID() {
+		return userID;
 	}
-	void setMemberPassword(String memberPassword) {
-		this.memberPassword = memberPassword;
+	void setUserID(String userID) {
+		this.userID = userID;
 	}
-	int getMemberLevel() {
-		return memberLevel;
+	String getUserPassword() {
+		return userPassword;
 	}
-	void setMemberLevel(int memberLevel) {
-		this.memberLevel = memberLevel;
+	void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+	int getUserLevel() {
+		return userLevel;
 	}
-
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getLastLoginDate() {
-		return lastLoginDate;
-	}
-
-	public void setLastLoginDate(String lastLoginDate) {
-		this.lastLoginDate = lastLoginDate;
-	}
-	@Override
-	public String toString() {
-		return memberID+ " "+memberPassword+" "+phoneNumber+ " " +memberLevel;
-	}
+	void setUserLevel(int userLevel) {
+		this.userLevel = userLevel;
+	}	
 }
