@@ -1,0 +1,2 @@
+23. 03. 21 MemberDao 1차 리팩토링
+23. 03. 21 MemberDao 2차 리팩토링 - Scanner -> inputMismatchException, 로그인 절차
